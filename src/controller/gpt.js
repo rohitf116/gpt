@@ -27,7 +27,7 @@ exports.openAi = async (req, res) => {
       return completion;
     }
     const reso = await runCompletion();
-
+    console.log(reso);
     res.status(200).json({ text: reso.data.choices[0] });
   } catch (error) {
     console.error(error);
@@ -36,40 +36,39 @@ exports.openAi = async (req, res) => {
 };
 
 exports.openAi2 = async (req, res) => {
-  console.log(gptPrompts);
+  //   console.log(gptPrompts);
   try {
-    const tttt = gptPrompts.map((cmd) => {
-      command = cmd.prompt;
-      token = cmd.tokens;
-      // const result = await openAiHelper(command, "test", token, 0.2);
-      // console.log(result);
-      return;
-    });
+    // const tttt = gptPrompts.map((cmd) => {
+    //   command = cmd.prompt;
+    //   token = cmd.tokens;
+    //   // const result = await openAiHelper(command, "test", token, 0.2);
+    //   // console.log(result);
+    //   return;
+    // });
     console.log(tttt);
     // heading
     const inputHeading = req.body.inputHeading || gptPrompts.headline.defaut;
     const instructionsHeading =
       req.body.instructionsHeading || gptPrompts.headline.prompt;
     const headingToken = gptPrompts.headline.tokens;
-    // const heading = await openAiHelper(
-    //   inputHeading,
-    //   instructionsHeading,
-    //   headingToken,
-    //   0.3
-    // );
+    const heading = await openAiHelper(
+      inputHeading,
+      instructionsHeading,
+      headingToken,
+      0.3
+    );
 
     const inputDescription =
       req.body.instructionsDescription || gptPrompts.description.defaut;
     const instructionsDescription =
       req.body.instructionsDescription || gptPrompts.description.prompt;
     const DescriptionToken = gptPrompts.description.tokens;
-    // const description = await openAiHelper(
-    //   inputDescription,
-    //   instructionsDescription,
-    //   DescriptionToken,
-    //   0.2
-    // );
-    // console.log(description, "+++++++++++++++");
+    const description = await openAiHelper(
+      inputDescription,
+      instructionsDescription,
+      DescriptionToken,
+      0.2
+    );
     res.status(200).json({
       heading: heading?.data?.choices[0],
       description: description?.data?.choices[0],
