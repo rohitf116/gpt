@@ -6,11 +6,19 @@ const { openAiHelper } = require("../utils/utils");
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+const block = require("../model/blocks");
 const openai = new OpenAIApi(configuration);
 console.log(process.env.OPENAI_API_KEY);
 // openai.apiKey = process.env.OPENAI_API_KEY;
 const gptPrompts = require("../default.json");
-
+function removeNewline(str) {
+  return str.replace(/\n/g, "");
+}
+function replaceHeadingWithHii(data, varr) {
+  const openingTag = data.substring(0, data.indexOf(">") + 1);
+  const closingTag = data.substring(data.lastIndexOf("<"));
+  return openingTag + varr + closingTag;
+}
 exports.openAi = async (req, res) => {
   try {
     // Get input and instructions from request body
@@ -38,15 +46,7 @@ exports.openAi = async (req, res) => {
 exports.openAi2 = async (req, res) => {
   //   console.log(gptPrompts);
   try {
-    // const tttt = gptPrompts.map((cmd) => {
-    //   command = cmd.prompt;
-    //   token = cmd.tokens;
-    //   // const result = await openAiHelper(command, "test", token, 0.2);
-    //   // console.log(result);
-    //   return;
-    // });
-    console.log(tttt);
-    // heading
+    const { id } = req.params;
     const inputHeading = req.body.inputHeading || gptPrompts.headline.defaut;
     const instructionsHeading =
       req.body.instructionsHeading || gptPrompts.headline.prompt;
@@ -57,21 +57,31 @@ exports.openAi2 = async (req, res) => {
       headingToken,
       0.3
     );
-
+    const headingText = removeNewline(heading?.data?.choices[0].text);
     const inputDescription =
-      req.body.instructionsDescription || gptPrompts.description.defaut;
+      req.body.inputDescription || gptPrompts.description.defaut;
     const instructionsDescription =
       req.body.instructionsDescription || gptPrompts.description.prompt;
     const DescriptionToken = gptPrompts.description.tokens;
+    // console.log(inputDescription, "-----------------");
     const description = await openAiHelper(
       inputDescription,
       instructionsDescription,
       DescriptionToken,
       0.2
     );
+    let descText = removeNewline(description?.data?.choices[0].text);
+    descText = `<h1>${descText}</h1>`;
+    console.log(descText, "---------------------------------");
+    // <h1>heading?.data?.choices[0]</h1>
+    const foundBlock = await block.findById(id);
+    const html = foundBlock.html;
+    const myData = replaceHeadingWithHii(html, headingText);
+    console.log(description?.data?.choices[0]);
     res.status(200).json({
-      heading: heading?.data?.choices[0],
-      description: description?.data?.choices[0],
+      myData,
+      heading: headingText,
+      description: descText,
     });
   } catch (error) {
     console.error(error);
