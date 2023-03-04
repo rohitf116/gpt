@@ -1,0 +1,12 @@
+{
+  "headline": {
+    "defaut": "This is Default Headline",
+    "prompt": "Create a 10 Words headline for landing page",
+    "tokens": 50
+  },
+  "description": {
+    "defaut": "This is Default description",
+    "prompt": "Create a 50 Words description for landing page",
+    "tokens": 100
+  }
+}
